@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulseira ID — Identificação Médica de Emergência</title>
+  <style>
+    :root {
+      --primary:      #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light:#f0fdfa;
+      --accent:       #14b8a6;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --border:       #e2e8f0;
+      --danger:       #ef4444;
+      --danger-bg:    #fef2f2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 28px 32px 32px;
+      text-align: center;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    header p {
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: var(--primary-light);
+    }
+
+    /* ── FIELDS ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.span-2 { grid-column: span 2; }
+
+    label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    input, select, textarea {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+    }
+    textarea { resize: vertical; min-height: 74px; }
+    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+    /* ── SENSITIVE BADGE ── */
+    .sensitive {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    /* ── BUTTON ── */
+    .btn-gerar {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      box-shadow: 0 4px 14px rgba(13,148,136,.35);
+    }
+    .btn-gerar:hover { background: var(--primary-dark); box-shadow: 0 6px 18px rgba(13,148,136,.4); }
+    .btn-gerar:active { transform: scale(0.985); }
+
+    /* ── RESULTADO ── */
+    #resultado { display: none; }
+    #resultado.show { display: block; }
+
+    .qr-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 8px 0;
+    }
+
+    #qr-img {
+      width: 210px;
+      height: 210px;
+      border: 3px solid var(--primary);
+      border-radius: 14px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .nome-display {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+    .tipo-display {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+    }
+
+    .btn-baixar {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 2px solid var(--primary);
+      border-radius: 9px;
+      padding: 11px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .18s;
+    }
+    .btn-baixar:hover { background: #ccfbf1; }
+
+    /* ── LGPD NOTE ── */
+    .lgpd {
+      background: var(--primary-light);
+      border: 1px solid #99f6e4;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 12px;
+      color: var(--primary-dark);
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 20px 40px;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .field.span-2 { grid-column: span 1; }
+      header h1 { font-size: 20px; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">🏥 Emergência Médica</div>
+  <h1>Pulseira de Identificação</h1>
+  <p>Preencha seus dados e gere o QR Code personalizado da sua pulseira</p>
+</header>
+
+<div class="container">
+
+  <!-- DADOS GERAIS -->
+  <div class="card">
+    <div class="card-title">📋 Dados Gerais</div>
+    <div class="grid-2">
+      <div class="field span-2">
+        <label>Nome Completo *</label>
+        <input type="text" id="nome" placeholder="Seu nome completo">
+      </div>
+      <div class="field">
+        <label>Data de Nascimento</label>
+        <input type="date" id="nascimento">
+      </div>
+      <div class="field">
+        <label>Tipo Sanguíneo *</label>
+        <select id="sangue">
+          <option value="">Selecione</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div class="field span-2">
+        <label>Contato de Emergência *</label>
+        <input type="text" id="contato" placeholder="Nome do familiar — (84) 9 9999-9999">
+      </div>
+    </div>
+  </div>
+
+  <!-- DADOS SENSÍVEIS -->
+  <div class="card">
+    <div class="card-title">🔒 Dados Médicos Sensíveis</div>
+    <span class="sensitive">⚠ Visível apenas por profissionais de saúde autorizados</span>
+    <div class="grid-2">
+      <div class="field span-2">
+        <label>Alergias a Medicamentos ou Substâncias</label>
+        <textarea id="alergias" placeholder="Ex.: Dipirona, Penicilina, AAS, látex..."></textarea>
+      </div>
+      <div class="field span-2">
+        <label>Doenças Preexistentes</label>
+        <textarea id="doencas" placeholder="Ex.: Diabetes tipo 2, Hipertensão arterial, Epilepsia..."></textarea>
+      </div>
+      <div class="field span-2">
+        <label>Medicamentos de Uso Contínuo</label>
+        <textarea id="medicamentos" placeholder="Ex.: Metformina 500mg — 2x ao dia | Losartana 50mg — 1x ao dia..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-gerar" onclick="gerarQR()">
+    ⚡ Gerar QR Code da Minha Pulseira
+  </button>
+
+  <!-- RESULTADO -->
+  <div class="card" id="resultado" style="margin-top:20px">
+    <div class="card-title">✅ QR Code Gerado</div>
+    <div class="qr-box">
+      <div class="nome-display" id="nome-display"></div>
+      <div class="tipo-display" id="tipo-display"></div>
+      <img id="qr-img" src="" alt="QR Code da pulseira">
+      <a id="btn-baixar" class="btn-baixar" download="pulseira-qrcode.png">
+        ⬇ Baixar QR Code para Imprimir
+      </a>
+    </div>
+    <div class="lgpd" style="margin-top:20px">
+      🔐 <strong>Privacidade:</strong> seus dados estão codificados diretamente no QR Code e <strong>não são armazenados em nenhum servidor</strong>. Apenas quem escanear a pulseira fisicamente terá acesso. Conforme a Lei nº 13.709/2018 — LGPD, você mantém controle total sobre suas informações.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Projeto FECIPE — Escola Estadual Pedro II, Lajes/RN · 2026<br>
+  Orientador: Prof. Santiago Cavalcante da Silva
+</footer>
+
+<script>
+function gerarQR() {
+  const nome        = document.getElementById('nome').value.trim();
+  const nascimento  = document.getElementById('nascimento').value;
+  const sangue      = document.getElementById('sangue').value;
+  const contato     = document.getElementById('contato').value.trim();
+  const alergias    = document.getElementById('alergias').value.trim();
+  const doencas     = document.getElementById('doencas').value.trim();
+  const medicamentos= document.getElementById('medicamentos').value.trim();
+
+  if (!nome || !sangue || !contato) {
+    alert('Preencha pelo menos: Nome Completo, Tipo Sanguíneo e Contato de Emergência.');
+    return;
+  }
+
+  // Montar texto que entra no QR Code
+  const linhas = [
+    '== EMERGENCIA MEDICA ==',
+    'NOME: ' + nome,
+    nascimento ? 'NASC: ' + nascimento : null,
+    'SANGUE: ' + sangue,
+    'CONTATO: ' + contato,
+    (alergias || doencas || medicamentos) ? '---' : null,
+    alergias    ? 'ALERGIAS: ' + alergias    : null,
+    doencas     ? 'DOENCAS: '  + doencas     : null,
+    medicamentos? 'MEDICAMENTOS: ' + medicamentos : null,
+  ].filter(Boolean).join('\n');
+
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&ecc=M&data='
+              + encodeURIComponent(linhas);
+
+  const img = document.getElementById('qr-img');
+  img.src = url;
+
+  document.getElementById('nome-display').textContent = nome;
+  document.getElementById('tipo-display').textContent = '🩸 ' + sangue;
+  document.getElementById('btn-baixar').href = url;
+
+  const res = document.getElementById('resultado');
+  res.classList.add('show');
+  setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+</script>
+
+</body>
+</html>
